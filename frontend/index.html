@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fullstack task</title>
+
+    <script type="text/javascript">
+        function newPost() {
+            window.location = 'newPost.html'
+        }
+
+/*        document.getElementById("newPostBtn").addEventListener("click", (e) => {
+            window.location = 'newPost.html'
+        }) */
+
+
+
+    </script>
+</head>
+
+<body>
+    <p>PostList</p>
+    <table>
+        <thead>
+            <tr>
+                <th>author</th>
+                <th>title</th>
+            </tr>
+        </thead>
+        <tbody id="postList">
+        </tbody>
+    </table>
+    <script>
+        fetch("http://localhost:3001/posts")
+        .then(function(res){
+            return res.json()
+        })
+        .then(function(posts){
+            let p = document.querySelector("#postList")
+            let out = ""
+            for(let post of posts){
+                out += `
+                    <tr>
+                        <td>${post.author}</td>
+                        <td>${post.title}</td>
+                        <td><button id="${post.id}" onclick="singlePost()">read post No.${post.id+1}</button></td>
+                    </tr>
+                    `
+            }
+            p.innerHTML = out
+        })
+
+        function singlePost() {
+            // Create event listener
+            document.addEventListener('click', (e) =>
+            {
+                e.preventDefault()
+                // Retrieve id from clicked element
+                let elementId = e.target.id
+                console.log(elementId)
+                // If element has id
+                if (elementId !== '') {
+                    // relocate
+                    window.location = `./post.html?id=` + elementId
+                }
+            })
+        }
+   
+    /*    const XHR = new XMLHttpRequest()
+        // initiate req
+        XHR.onreadystatechange = reportStatus
+        XHR.open("GET", "/posts")
+        XHR.send()
+
+        function reportStatus() {
+            if(XHR.readyState == 4) {
+                document.getElementById('postList').innerHTML = this.reponseText
+            }
+        }
+
+        createTableFromJSON(this.responseText)
+
+        function createTableFromJSON(jsonData) {
+            var arrPosts = []
+            arrPosts = JSON.parse(jsonData)
+
+            var col =[]
+            for(var i = 0; i < arrPosts.length; i++) {
+                for(var key in arrPosts[i]) {
+                    if(col.indexOf(key) === -1) {
+                        col.push(key)
+                    }
+                }
+            }
+
+        // creat a dynamic table
+        var table = document.createElement()
+        // table row
+        var tr = table.insertRow(-1)
+
+        for(var i = 0; i < col.length; i++) {
+            // table header
+            var th = document.createElement("th")
+            th.innerHTML = col[i]
+            tr.appendChild(th)
+        }
+
+        // add the JSON to the rows
+        for(var i = 0; i < arrPosts.length; i++) {
+            tr = table.insertRow(-1)
+
+            for(var j = 0; j < col.length; j++) {
+                var tabCell = tr.insertCell(-1)
+                tabCell.innerHTML = arrPosts[i][col[j]]
+            }
+        }
+        // add the dynamic table to the "postList" container
+        var divContainer = document.getElementById("postList")
+        divContainer.innerHTML = ""
+        divContainer.appendChild(table)
+        } */
+    </script>
+    <hr class="solid">
+    <button onclick="newPost()" id="newPostBtn">new post</button>
+</body>
+
+</html>

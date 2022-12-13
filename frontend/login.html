@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!--	<link rel="stylesheet" type="text/css" href="semantic/dist/semantic.min.css">
+	<script
+		src="https://code.jquery.com/jquery-3.6.1.js"
+		integrity="sha256-3zlB5s2uwoUzrXK3BT7AX3FyvojsraNFxCc2vC/7pNI="
+		crossorigin="anonymous"></script>
+	<script src="semantic/dist/semantic.min.js"></script> -->
+	<link rel="stylesheet" href="style.css">
+	<title>login screen</title>
+</head>
+<body>
+	<div id="login-screen">
+	<h2 class="ui center aligned icon header">
+		<i class="circular users icon"></i>
+		<u>Login screen</u>
+	  </h2>
+
+	  <h3 class="ui block header" id="description">
+	  --> type in your password <--
+	  </h3>
+
+	<!-- input for a password when pressed enter the input will be sent to the backend -->
+	<form id="loginForm" method="POST">
+		<input type="password" id="password" placeholder="password" method="post">
+	</form>
+	<p div id="result"></p>
+	
+
+</div>
+<script>
+
+
+const password = document.getElementById('password')
+// if the enter key is pressed and the input field is not empty
+password.addEventListener('keyup', function(event) {
+	if (event.keyCode === 13 && password.value !== '') {
+		checkPassword();
+	}
+});
+
+// function with fetch to send the password to the backend
+function checkPassword() {
+	const payload = password.value;
+	console.log(payload);
+	fetch('http://localhost:3001/login', {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json'
+		},
+		body: JSON.stringify({payload})
+	})
+	.then(response => response.json())
+	.then(data => {
+		// if the received status is 200 the user will be redirected to the index.html page
+		if (data.status === 200) {
+			window.location.href = 'index.html';
+		// if the password not correct, the user will be notified
+		} else {
+			document.getElementById('result').innerHTML = 'wrong password';
+		}
+	})
+}
+
+</script>
+
+
+</body>
+</html>

@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel=“stylesheet” type=“text/css” href=“style.css” />
+    <title>Fullstack task</title>
+</head>
+
+<body>
+
+    <p>Post Detail</p>
+
+    <table>
+        <thead>
+            <tr>
+                <th>author</th>
+                <th>title</th>
+                <th>(post)id</th>
+            </tr>
+        </thead>
+        <tbody id="postSingle">
+        </tbody>
+    </table><br><br>
+
+    <p>comments on <u>this</u> post</p>
+    <table>
+        <thead>
+            <tr>
+                <th>id</th>
+                <th>body</th>
+                <th>postId</th>
+            </tr>
+        </thead>
+        <tbody id="commentPost">
+        </tbody>
+    </table><br><br>
+	<!-- add a form to add a comment -->
+	<form id="addComment">
+        <input type="text" id="body" placeholder="add a comment">
+        <input type="submit" value="add comment" onsubmit="addComment()">
+    </form>
+
+    <script>
+        function zurueck() {
+            window.location = 'index.html'
+        }
+
+        var url = window.location.href
+        const postId = url.split('=')[1]          // url.match(/[0-9]+$/)
+        console.log(`postId: `, postId)
+
+        fetch(`http://localhost:3001/posts/${postId}`)
+        .then(function(res){
+            return res.json()
+        })
+        .then(function(post){
+            let p = document.querySelector("#postSingle")
+            let out = ""
+                    out = `
+                        <tr>
+                            <td>${post.author}</td>
+                            <td>${post.title}</td>
+                            <td>${post.id}</td>
+                        </tr>
+                        `
+            p.innerHTML = out
+                
+        })
+        .catch(function (err) {
+                console.log('error: ' + err)
+            })
+
+        fetch(`http://localhost:3001/comments/${postId}`)
+        .then(function(res){
+            return res.json()
+        })
+        .then(function(postComments){
+            let p = document.querySelector("#commentPost")
+            let out = ""
+            for(let comment of postComments){
+                out += `
+                    <tr>
+                        <td>${comment.id}</td>
+                        <td>${comment.body}</td>
+                        <td>${comment.postId}</td>
+                    </tr>
+                    `
+            }
+            p.innerHTML = out
+        })
+
+		// add a new comment to the post on button click with the id
+		document.getElementById("addComment").addEventListener("submit", function(event){
+			event.preventDefault()
+			addComment()
+		})
+		function addComment() {
+			// get the id of the post from the url
+		//	let postId = url.split('=')[1]
+			// get the comment from the form
+			let body = document.getElementById("body").value
+			// create a new object with the data including comment and postId
+			let data = JSON.stringify({body,postId})
+			// console log the data
+			console.log(`CommentPostBeforeSend: `, data)
+			// send the data to the server
+			fetch(`http://localhost:3001/comment`, {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: data,
+			})
+			.then(function(res){
+				return res.json()
+			})
+			.then(function(data){
+				console.log(data)
+			})
+		}
+/*		// add a new comment to the post with the id
+		function addComment() {
+			// get the id of the post from the url
+		//	let postId = url.split('=')[1]
+			// get the comment from the form
+			let body = document.getElementsById("body").value
+
+			// create a new object with the data including author, comment and postId
+			let data = {body,postId}
+			console.log(data)
+
+			fetch(`http://localhost:3001/comments`, {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: data,
+			})
+			.then(function(res){
+				return res.json()
+			})
+			.then(function(data){
+				console.log(data)
+			})
+		}*/
+    </script>
+
+    <hr class="solid"></hr>
+    <button onclick='zurueck()'>back to main page</button>
+</body>
+
+</html>

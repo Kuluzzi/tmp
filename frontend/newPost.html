@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fullstack task</title>
+</head>
+<body>
+    <p>write a new post</p>
+
+    <form id="submitForm">
+		<label for="author">author</label>
+        <input type="text" placeholder="author" name="author" id="author">
+		<label for="title">title</label>
+        <input type="text" placeholder="your post" name="title" id="title">
+        <button type="submit">send post</button>
+    </form>
+		<p id="posted"></p>
+
+<script>
+		const input = document.querySelectorAll('input')
+		const posted = document.getElementById('posted')
+		input.forEach(element => {
+			addEventListener('change', function (e) {
+			posted.textContent = `Input Values = Author: ${input[0].value} -> Title: ${input[1].value} -- click send post!`
+        	})
+		})
+		
+		// save the name of the author to the localStorage
+		const author = localStorage.getItem('author')
+		if(author) {
+			document.getElementById('author').value = author
+		}
+		
+		// get the name of the author
+/*		const authorInput = document.getElementById('author')
+		// save the name of the author to the localStorage
+		authorInput.addEventListener('change', (e) => {
+			localStorage.setItem('author', e.target.value)
+		})
+		// fetch the name of the author from the localStorage when writing a new post
+		authorInput.value = localStorage.getItem('author')*/
+
+
+
+
+	// get the element with id="posted" to show the new post's author and title
+//	const posted = document.getElementById('posted')
+	// get the values from the form when the submit button is clicked
+	const form = document.getElementById('submitForm')
+	form.addEventListener('submit', (e) => {
+		// prevent the page reload of the submit button
+		e.preventDefault()
+		// create a new FormData object with the names and values from the form
+		const formData = new FormData(form)
+		for(item of formData) {
+			console.log(item[0], item[1])
+		}
+		// get the values from the form and append them to the FormData object with object.entries
+		const formDataObj = Object.fromEntries(formData)
+		// stringify the object
+		const payload = JSON.stringify(formDataObj)
+		console.log(payload)
+		// send the payload to the server with fetch
+		fetch('http://localhost:3001/post', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: payload,
+		})
+		// if the response is ok, return the response as json
+		.then(function(res) {
+			if(res.ok) {
+				return res.json()
+			}
+		})
+		// if the response is ok, log the data to the console
+		.then(function(res) {
+			console.log(res)
+		})
+		// if the response got an error, log a warning to the console
+		.catch(function(err) {
+			console.warn("Something went wrong.", err)
+		})
+		// save author data to the localStorage
+		localStorage.setItem('author', formDataObj.author)
+//		posted.textContent = `Form Submitted! Author: ${event.target.author.value} Title: ${event.target.title.value}`
+	})
+/*	let all_btn = document.querySelectorAll("button");
+all_btn.forEach(function(btn) {
+    btn.addEventListener("click", function() {
+        console.log(this.innerHTML + " is clicked")
+    });
+});*/
+</script>
+
+
+<!-- 
+// the server will also respond with the new post's id, author and title as data
+// show the new post's id, author and title on the newPost page in a new table element with id="result" as table body
+-->
+<br><br>
+<p id="posted"></p>
+<br><br>
+<button onclick="window.location.href='index.html'">back to postlist</button>
+
+
+</body>
+
+</html>

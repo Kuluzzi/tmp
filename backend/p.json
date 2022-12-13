@@ -1,0 +1,5 @@
+{"praxis":[
+	{"id": 1, "password": "123456", "praxisName": "Altona"},
+	{"id": 2, "password": "abc123", "praxisName": "Eppendorf"}
+]
+}
