@@ -28,24 +28,40 @@
 	<form id="loginForm" method="POST">
 		<input type="password" id="password" placeholder="password" method="post">
 	</form>
-	<p div id="result"></p>
-	
-
+	<p div id="result"></p> 
 </div>
 <script>
-
-
-const password = document.getElementById('password')
-// if the enter key is pressed and the input field is not empty
-password.addEventListener('keyup', function(event) {
-	if (event.keyCode === 13 && password.value !== '') {
-		checkPassword();
+	const password = document.getElementById('password')
+	// if the enter key is pressed and the input field is not empty
+	password.addEventListener('keyup', function(event) {
+		if (event.keyCode === 13 && password.value !== '') {
+			checkPassword()
+		}
+	})
+	// provided token will be saved in the local storage
+	function saveToken(token) {
+		localStorage.setItem('token', token)
 	}
-});
+
+// function to check the password from the input field with password in the local storage
+	function checkToken() {
+		const token = localStorage.getItem('token')
+		if(!token) {
+			localStorage.setItem('token', token)
+		}
+		if (token == password.value) {
+			window.location.href = 'index.html'
+		}
+	}
+// check if the token is already in the local storage
+	//checkToken()
 
 // function with fetch to send the password to the backend
+// if res.status correct the user will be redirected to the index.html page
+// if the password is not correct the user will be notified
+
 function checkPassword() {
-	const payload = password.value;
+	const payload = password.value
 	console.log(payload);
 	fetch('http://localhost:3001/login', {
 		method: 'POST',
@@ -55,19 +71,21 @@ function checkPassword() {
 		body: JSON.stringify({payload})
 	})
 	.then(response => response.json())
+	// compare provided password and save the password in the local storage
 	.then(data => {
 		// if the received status is 200 the user will be redirected to the index.html page
+		// get the token from the local storage
 		if (data.status === 200) {
-			window.location.href = 'index.html';
-		// if the password not correct, the user will be notified
+			checkToken(data.token)
+			console.log(data.token)
+			window.location.href = 'index.html'
+		// if the password is not correct, the user will be notified
 		} else {
-			document.getElementById('result').innerHTML = 'wrong password';
+			document.getElementById('result').innerHTML = 'wrong password'
 		}
 	})
 }
-
 </script>
-
 
 </body>
 </html>

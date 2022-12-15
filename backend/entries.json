@@ -1,1 +1,26 @@
-{"posts":[{"id":0,"title":"json-server","author":"typicode"},{"id":1,"title":"Typical server-client architecture","author":"Anycode"},{"id":2,"title":"Pretty CSS Titles","author":"Anycode"},{"id":3,"title":"Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut Labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata saintus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut Labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum.Stet clita kasd gubergren, no sea takimata Santus est Lorem ipsum dolor sit amet. sed diam voluptua.At vero eos et accusam et justo duo dolores et ea rebum.Stet clita kasd gubergren, no sea takimata Santus est Lorem ipsum dolor sit amet.vel illum dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto odio dignissim qu i blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi. Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. ","author":"Anycode"},{"author":"gringo","title":"Super!","id":4},{"author":"gringo","title":"dfd","id":5},{"author":"gringo","title":"ddd","id":6}],"comments":[{"id":1,"body":"some comment","postId":0},{"id":2,"body":"other comment","postId":1},{"id":3,"body":"OK, 4/5","postId":1},{"id":4,"body":"OK, 4/5","postId":1},{"id":5,"body":"OK, 4/5","postId":2},{"id":6,"body":"OK, 4/5","postId":2},{"id":7,"body":"OK, 4/5","postId":2},{"id":8,"body":"OK, 4/5","postId":2},{"id":9,"body":"OK, 4/5","postId":3},{"body":"wow","postId":0,"id":10},{"body":"meow","postId":4,"id":11},{"body":"","postId":4,"id":12},{"body":"dsds","postId":4,"id":13},{"body":"dddddsd","postId":0,"id":14},{"body":"super","postId":0,"id":15}]}
+{"posts":
+[{"id":0,"title":"json-server","author":"typicode"},
+{"id":1,"title":"Typical server-client architecture","author":"Anycode"},
+{"id":2,"title":"Pretty CSS Titles","author":"Anycode"},
+{"id":3,"title":"Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut Labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata saintus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut Labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum.Stet clita kasd gubergren, no sea takimata Santus est Lorem ipsum dolor sit amet. sed diam voluptua.At vero eos et accusam et justo duo dolores et ea rebum.Stet clita kasd gubergren, no sea takimata Santus est Lorem ipsum dolor sit amet.vel illum dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto odio dignissim qu i blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi. Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. ","author":"Anycode"},
+{"author":"gringo","title":"Super!","id":4},
+{"author":"gringo","title":"dfd","id":5},
+{"author":"gringo","title":"ddd","id":6}
+],
+"comments":
+[{"id":1,"body":"some comment","postId":0},
+{"id":2,"body":"other comment","postId":1},
+{"id":3,"body":"OK, 4/5","postId":1},
+{"id":4,"body":"OK, 4/5","postId":1},
+{"id":5,"body":"OK, 4/5","postId":2},
+{"id":6,"body":"OK, 4/5","postId":2},
+{"id":7,"body":"OK, 4/5","postId":2},
+{"id":8,"body":"OK, 4/5","postId":2},
+{"id":9,"body":"OK, 4/5","postId":3},
+{"body":"wow","postId":0,"id":10},
+{"body":"meow","postId":4,"id":11},
+{"body":"","postId":4,"id":12},
+{"body":"dsds","postId":4,"id":13},
+{"body":"dddddsd","postId":0,"id":14},
+{"body":"super","postId":0,"id":15}
+]}

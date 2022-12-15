@@ -69,6 +69,95 @@ app.get('/comments/:postId', (req, res) => {
         res.send(postComments)
         console.log("'/comments/:postId'-route triggered!")
 })
+// middleware to be able to just write a post when logged in
+// check if the token is valid
+
+// write a route for logging in
+app.post('/login', (req, res) => {
+	// receive the login-data from the frontend
+	const loginData = req.body
+	console.log(`loginData: `, loginData)
+	// check if json-file not exists
+	if (!fs.existsSync('./p.json')) {
+		// create new file if not exists
+		fs.closeSync(fs.openSync('./p.json', 'w'))
+	}
+		//check if password is valid with alltoken file
+		if (loginData.password == alltoken.password) {
+			// if password is valid, send a token to the frontend
+			res.send
+			({
+				token:
+				{
+					//name: loginData.name,
+					password: loginData.password
+				}
+			})
+		}
+		else {
+			// if password is not valid, send a message to the frontend
+			res.send
+			({
+				message: "Wrong password"
+			})
+		}
+})    
+// check for the 
+app.post('/user/login', (req, res, next) => {
+	const { body } = req;
+	const { password } = body;
+
+	//checking to make sure the user entered the correct username/password combo
+	if(password === user.password) { 
+		//if user log in success, generate a JWT token for the user with a secret key
+		jwt.sign({user}, 'privatekey', { },(err, token) => {
+			if(err) { console.log(err) }    
+			res.send(token);
+		});
+	} else {
+		console.log('ERROR: Could not log in');
+	}
+})
+
+// protected route
+// jwt-token-name to check author.name
+
+app.get('/posts', checkJwt, (req, res) => {
+	//verify the JWT token generated for the user
+	jwt.verify(req.token, 'privatekey', (err, authorizedData) => {
+		if(err){
+			//If error send Forbidden (403)
+			console.log('ERROR: Could not connect to the protected route');
+			res.sendStatus(403);
+		} else {
+			//If token is successfully verified, we can send the autorized data 
+			res.json({
+				message: 'Successful log in',
+				authorizedData
+			});
+			console.log('SUCCESS: Connected to protected route');
+		}
+	})
+});
+//Check to make sure header is not undefined, if so, return Forbidden (403)
+const checkJwt = (req, res, next) => {
+    const header = req.headers['authorization'];
+
+    if(typeof header !== 'undefined') {
+        const bearer = header.split(' ');
+        const token = bearer[1];
+
+        req.token = token;
+        next();
+    } else {
+        //If header is undefined return Forbidden (403)
+        res.sendStatus(403)
+    }
+}
+
+// jwt-token-password to check author.password
+
+// write a route for adding a post
 
 app.post('/post', (req, res) => {
 	// receive the new post from the frontend

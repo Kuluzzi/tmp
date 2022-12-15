@@ -12,12 +12,6 @@
             window.location = 'newPost.html'
         }
 
-/*        document.getElementById("newPostBtn").addEventListener("click", (e) => {
-            window.location = 'newPost.html'
-        }) */
-
-
-
     </script>
 </head>
 
@@ -68,7 +62,14 @@
                 }
             })
         }
-   
+
+   // if password in local storage is correct, redirect to index.html
+		if (localStorage.getItem('password') == '1234') {
+			window.location = 'index.html'
+		} else {
+			window.location = 'login.html'
+		}
+
     /*    const XHR = new XMLHttpRequest()
         // initiate req
         XHR.onreadystatechange = reportStatus
