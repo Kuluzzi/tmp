@@ -102,12 +102,12 @@ app.post('/login', (req, res) => {
 			})
 		}
 })    
-// check for the 
+// check for the sent password in the json-file
 app.post('/user/login', (req, res, next) => {
 	const { body } = req;
 	const { password } = body;
 
-	//checking to make sure the user entered the correct username/password combo
+	//checking to make sure the user entered the correct password combo
 	if(password === user.password) { 
 		//if user log in success, generate a JWT token for the user with a secret key
 		jwt.sign({user}, 'privatekey', { },(err, token) => {
