@@ -69,9 +69,36 @@ app.get('/comments/:postId', (req, res) => {
         res.send(postComments)
         console.log("'/comments/:postId'-route triggered!")
 })
-// middleware to be able to just write a post when logged in
-// check if the token is valid
 
+app.post('/login/verify', (req, res) => {
+    const token = req.body.token
+    if (!token) return res.sendStatus(400)
+    jwt.verify(token, secretValueFromENV, (err, decoded) => {
+        if (err) {
+            console.log(`Error: `, err)
+            return res.sendStatus(403)
+        }
+        console.log(`decoded: `, decoded)
+        return res.send(decoded)
+    })
+})
+
+app.post('/login', (req, res) => {
+    const password = req.body.password
+    for (let i = 0; i < alltoken.praxis.length; i++) {
+        if (password == alltoken.praxis[i].password) {
+            // send the token to the frontend
+            const objectToSign = {
+                id: alltoken.praxis[i].id,
+                name: alltoken.praxis[i].praxisName
+            }
+            const token = jwt.sign(objectToSign, secretValueFromENV)
+            return res.send({ token })
+        }
+    }
+    res.send('Pass is incorrect!')
+})
+// middleware to be able to just write a post when logged in
 // write a route for logging in
 app.post('/login', (req, res) => {
 	// receive the login-data from the frontend
@@ -101,9 +128,71 @@ app.post('/login', (req, res) => {
 				message: "Wrong password"
 			})
 		}
-})    
+})
+
+// middleware to be able to just write a post when logged in
+// check if the token is valid
+const checkToken = (req, res, next) => {
+	// get the token from the frontend
+	const token = req.body.token
+	console.log(`token: `, token)
+	// check if the token is valid
+	if (token == alltoken.password) {
+		// if token is valid, go to the next middleware
+		next()
+	}
+	else {
+		// if token is not valid, send a message to the frontend
+		res.send
+		({
+			message: "Wrong token"
+		})
+	}
+}
+
+//Check to make sure header is not undefined, if so, return Forbidden (403)
+const checkJwt = (req, res, next) => {
+    const header = req.headers['authorization'];
+
+    if(typeof header !== 'undefined') {
+        const bearer = header.split(' ');
+        const token = bearer[1];
+        req.token = token;
+        next();
+    } else {
+        //If header is undefined return Forbidden (403)
+        res.sendStatus(403)
+    }
+}
+
+// write a route for writing a post
+app.post('/writePost', checkToken, (req, res) => {
+	// receive the post-data from the frontend
+	const postData = req.body
+	console.log(`postData: `, postData)
+	// check if json-file not exists
+	if (!fs.existsSync('./entries.json')) {
+		// create new file if not exists
+		fs.closeSync(fs.openSync('./entries.json', 'w'))
+	}
+	// read the json-file
+	const data = fs.readFileSync('./entries.json')
+	// parse the json-file
+	const json = JSON.parse(data)
+	// add the new post to the json-file
+	json.posts.push(postData)
+	// write the json-file
+	fs.writeFileSync('./entries.json', JSON.stringify(json))
+	// send a message to the frontend
+	res.send
+	({
+		message: "Post added"
+	})
+})
+
+/*
 // check for the sent password in the json-file
-app.post('/user/login', (req, res, next) => {
+app.post('/post', (req, res, next) => {
 	const { body } = req;
 	const { password } = body;
 
@@ -117,7 +206,7 @@ app.post('/user/login', (req, res, next) => {
 	} else {
 		console.log('ERROR: Could not log in');
 	}
-})
+})*/
 
 // protected route
 // jwt-token-name to check author.name
@@ -139,21 +228,6 @@ app.get('/posts', checkJwt, (req, res) => {
 		}
 	})
 });
-//Check to make sure header is not undefined, if so, return Forbidden (403)
-const checkJwt = (req, res, next) => {
-    const header = req.headers['authorization'];
-
-    if(typeof header !== 'undefined') {
-        const bearer = header.split(' ');
-        const token = bearer[1];
-
-        req.token = token;
-        next();
-    } else {
-        //If header is undefined return Forbidden (403)
-        res.sendStatus(403)
-    }
-}
 
 // jwt-token-password to check author.password
 

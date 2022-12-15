@@ -38,28 +38,20 @@
 			checkPassword()
 		}
 	})
-	// provided token will be saved in the local storage
-	function saveToken(token) {
-		localStorage.setItem('token', token)
-	}
 
 // function to check the password from the input field with password in the local storage
 	function checkToken() {
 		const token = localStorage.getItem('token')
-		if(!token) {
-			localStorage.setItem('token', token)
-		}
 		if (token == password.value) {
 			window.location.href = 'index.html'
+			if(!token) {
+				localStorage.setItem('token', token)
+			}
 		}
 	}
-// check if the token is already in the local storage
-	//checkToken()
-
 // function with fetch to send the password to the backend
 // if res.status correct the user will be redirected to the index.html page
 // if the password is not correct the user will be notified
-
 function checkPassword() {
 	const payload = password.value
 	console.log(payload);
