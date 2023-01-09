@@ -1,5 +1,3 @@
-{"praxis":[
-	{"id": 1, "password": "123456", "praxisName": "Altona"},
-	{"id": 2, "password": "abc123", "praxisName": "Eppendorf"}
-]
-}
+{"praxis":[{"id":1,"password":"123456","authorName":"Altona"},
+{"id":2,"password":"abc123","authorName":"Eppendorf"},
+{"authorName":"name","password":"password","id":3},{"authorName":"name","password":"password","id":4},{"authorName":"name","password":"password","id":5},{"authorName":"name","password":"password","id":6}]}

@@ -3,7 +3,7 @@
 <head>
 	<meta charset="UTF-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">	
 <!--	<link rel="stylesheet" type="text/css" href="semantic/dist/semantic.min.css">
 	<script
 		src="https://code.jquery.com/jquery-3.6.1.js"
@@ -13,7 +13,7 @@
 	<link rel="stylesheet" href="style.css">
 	<title>login screen</title>
 </head>
-<body>
+<body onload="checkLogin()">
 	<div id="login-screen">
 	<h2 class="ui center aligned icon header">
 		<i class="circular users icon"></i>
@@ -25,58 +25,91 @@
 	  </h3>
 
 	<!-- input for a password when pressed enter the input will be sent to the backend -->
-	<form id="loginForm" method="POST">
-		<input type="password" id="password" placeholder="password" method="post">
+	<form id="login-form" method="POST" action="/login">
+		<input type="password" id="password" placeholder="password">
+		<button type="submit" id="submit" onclick="checkPassword()">submit</button>
 	</form>
-	<p div id="result"></p> 
+	<p div id="result"></p>
 </div>
 <script>
-	const password = document.getElementById('password')
-	// if the enter key is pressed and the input field is not empty
-	password.addEventListener('keyup', function(event) {
-		if (event.keyCode === 13 && password.value !== '') {
-			checkPassword()
-		}
-	})
-
-// function to check the password from the input field with password in the local storage
-	function checkToken() {
+	// function to check if the password in alltoken in backend is correct
+	// if the password is correct the user will be redirected to the index.html page
+	// if the password is not correct the user will be notified
+	function checkPassword() {
+		// prevent the form from refreshing
+		event.preventDefault()
+		// get the input field value
+		const payload = document.getElementById('password').value
+		console.log(payload)
 		const token = localStorage.getItem('token')
-		if (token == password.value) {
-			window.location.href = 'index.html'
-			if(!token) {
-				localStorage.setItem('token', token)
-			}
+		// check if the input is empty
+		if (password.value !== '') {
+			// send the password to the backend
+			fetch('http://localhost:3001/login', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					'Authorization': `Bearer ${token}`
+				},
+			//	body: {'password': payload}
+				body: JSON.stringify({ 'password': payload })
+			})
+			// answer from the backend
+			.then(response => response.json())
+			.then(data => {
+				console.log(`received: `, data)
+				// if the data is 200 and the token is in the data
+				if (data.token) {							// why is status 200 not working?
+					var tokenInLocalStorage = localStorage.getItem('token')
+					// if the token is not in the local storage
+					if (tokenInLocalStorage) {
+						// remove the token from the local storage
+						localStorage.removeItem('token')
+					}
+					// save the token in the local storage
+					localStorage.setItem('token', data.token)
+					// redirect the user to the index.html page
+					window.location = 'index.html'
+				}
+				else {
+				// if the password is not correct
+					document.getElementById('result').innerHTML = data
+				}
+			})
+		}
+		else {
+			document.getElementById('result').innerHTML = 'please enter a password'
 		}
 	}
-// function with fetch to send the password to the backend
-// if res.status correct the user will be redirected to the index.html page
-// if the password is not correct the user will be notified
-function checkPassword() {
-	const payload = password.value
-	console.log(payload);
-	fetch('http://localhost:3001/login', {
-		method: 'POST',
-		headers: {
-			'Content-Type': 'application/json'
-		},
-		body: JSON.stringify({payload})
-	})
-	.then(response => response.json())
-	// compare provided password and save the password in the local storage
-	.then(data => {
-		// if the received status is 200 the user will be redirected to the index.html page
+
+	// check if the user is already logged in
+	// if the user is already logged in the user will be redirected to the index.html page
+	// if the user is not logged in the user will be redirected to the login.html page
+	// if the user is not logged in the user will be notified
+	function checkLogin() {
 		// get the token from the local storage
-		if (data.status === 200) {
-			checkToken(data.token)
-			console.log(data.token)
-			window.location.href = 'index.html'
-		// if the password is not correct, the user will be notified
-		} else {
-			document.getElementById('result').innerHTML = 'wrong password'
+		var localToken = localStorage.getItem('token')
+		// fetch request to the backend to check if the token is valid
+		fetch('http://localhost:3001/login/verify', {
+			method: 'GET',
+			headers: {
+				'Content-Type': 'application/json',
+				'Authorization': `Bearer ${localToken}`
+			}
+		})
+		.then(response => response.json())
+		.then(function(data) {
+				console.log(data)
+				// if the token is valid the user will be redirected to the index.html page
+				if (data.status === 200) {
+					window.location = 'index.html'
+				}
+				// if the token is not valid the user will be notified
+				else {
+					document.getElementById('result').innerHTML = 'you are not logged in'
+				}
+			})
 		}
-	})
-}
 </script>
 
 </body>

@@ -30,10 +30,7 @@
 		
 		// save the name of the author to the localStorage
 		const author = localStorage.getItem('author')
-		if(author) {
-			document.getElementById('author').value = author
-		}
-		
+
 		// get the name of the author
 /*		const authorInput = document.getElementById('author')
 		// save the name of the author to the localStorage
@@ -43,11 +40,8 @@
 		// fetch the name of the author from the localStorage when writing a new post
 		authorInput.value = localStorage.getItem('author')*/
 
-
-
-
 	// get the element with id="posted" to show the new post's author and title
-//	const posted = document.getElementById('posted')
+	//	const posted = document.getElementById('posted')
 	// get the values from the form when the submit button is clicked
 	const form = document.getElementById('submitForm')
 	form.addEventListener('submit', (e) => {
@@ -56,39 +50,56 @@
 		// create a new FormData object with the names and values from the form
 		const formData = new FormData(form)
 		for(item of formData) {
-			console.log(item[0], item[1])
+			console.log('entered keys and values: ', item[0], item[1])
 		}
 		// get the values from the form and append them to the FormData object with object.entries
 		const formDataObj = Object.fromEntries(formData)
-		// stringify the object
-		const payload = JSON.stringify(formDataObj)
-		console.log(payload)
-		// send the payload to the server with fetch
-		fetch('http://localhost:3001/post', {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json'
-			},
-			body: payload,
-		})
-		// if the response is ok, return the response as json
-		.then(function(res) {
-			if(res.ok) {
-				return res.json()
+		console.log(formDataObj)
+		if(localStorage.getItem('token')) {		// check if the client is logged in by checking if the 'Authorization' header is present in the request
+			fetch('http://localhost:3001/login/verify', {
+				headers: {
+					'Authorization': 'Bearer ' + localStorage.getItem('token')
+				}
+			})
+			.then(function(res){
+				if(res.status === 403) {
+					// if the client is not logged in, display an error message
+					document.getElementById("result").innerHTML = "Error: you must be logged in to add a comment"
+					window.location = 'login.html'	
+				} else {
+				// if the client is logged in send the post to the server
+				fetch('http://localhost:3001/posts', {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json'
+					},
+					body: JSON.stringify(formDataObj),
+				})
+				// if the response is ok, return the response as json
+				.then(function(res) {
+					return res.json()
+				})
+				.then(function(data){
+					console.log("loggedIn comment added: ", data)
+				})
+				.catch(function(err) {
+					console.error('Error: ' + err)
+				})
 			}
-		})
-		// if the response is ok, log the data to the console
-		.then(function(res) {
-			console.log(res)
-		})
-		// if the response got an error, log a warning to the console
-		.catch(function(err) {
-			console.warn("Something went wrong.", err)
-		})
-		// save author data to the localStorage
-		localStorage.setItem('author', formDataObj.author)
-//		posted.textContent = `Form Submitted! Author: ${event.target.author.value} Title: ${event.target.title.value}`
+			})
+			.catch(function(err) {
+				console.error('Error: ' + err)
+			})
+		} else {
+			window.location = 'login.html'
+		}
 	})
+
+	// save author data to the localStorage
+	localStorage.setItem('author', author)
+	//		posted.textContent = `Form Submitted! Author: ${event.target.author.value} Title: ${event.target.title.value}`
+		
+	// show which button is clicked
 /*	let all_btn = document.querySelectorAll("button");
 all_btn.forEach(function(btn) {
     btn.addEventListener("click", function() {

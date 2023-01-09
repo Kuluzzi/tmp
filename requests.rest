@@ -1,0 +1,45 @@
+GET http://localhost:3001/posts
+
+###
+POST http://localhost:3001/upload
+Content-Type: multipart/form-data
+
+{
+	"file": "file"
+}
+
+###
+
+POST http://localhost:3001/post
+Authorization: Bearer {token}
+Content-Type: application/json
+
+{
+	"author": "Lou",
+	"title": "content"
+}
+
+###
+POST http://localhost:3001/login
+Content-Type: application/json
+
+{
+	"password": "123456"
+}
+
+###
+POST http://localhost:3001/login/verify
+Content-Type: application/json
+
+{
+	"token": ""
+}
+	
+###
+POST http://localhost:3001/authors
+Content-Type: application/json
+
+{
+	"password": "password",
+	"authorName": "name"
+}

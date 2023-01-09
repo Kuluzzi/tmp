@@ -7,6 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel=“stylesheet” type=“text/css” href=“style.css” />
     <title>Fullstack task</title>
+
 </head>
 
 <body>
@@ -38,11 +39,20 @@
         </tbody>
     </table><br><br>
 	<!-- add a form to add a comment -->
-	<form id="addComment">
+	<form id="addCommentLoggedIn">
         <input type="text" id="body" placeholder="add a comment">
-        <input type="submit" value="add comment" onsubmit="addComment()">
-    </form>
-
+		<input type="text" id="author" placeholder="author">
+        <input type="submit" value="add comment logged in">
+    </form><br>
+	<form id="addComment">
+		<input type="text" id="comment" placeholder="add a comment">
+		<input type="submit" value="add comment">
+	</form><br>
+	<form id="fileUpload" action="/upload" method="POST" enctype="multipart/form-data">
+		<input type="file" id="file" name="file">
+		<input type="submit" value="upload file">
+	</form><br>
+	<p id="result"></p>
     <script>
         function zurueck() {
             window.location = 'index.html'
@@ -51,7 +61,7 @@
         var url = window.location.href
         const postId = url.split('=')[1]          // url.match(/[0-9]+$/)
         console.log(`postId: `, postId)
-
+		// req to get a specific post
         fetch(`http://localhost:3001/posts/${postId}`)
         .then(function(res){
             return res.json()
@@ -72,7 +82,7 @@
         .catch(function (err) {
                 console.log('error: ' + err)
             })
-
+		// req to get all comments on a specific post
         fetch(`http://localhost:3001/comments/${postId}`)
         .then(function(res){
             return res.json()
@@ -91,6 +101,9 @@
             }
             p.innerHTML = out
         })
+		.catch(function (err) {
+				console.log('error: ' + err)
+			})
 
 		// add a new comment to the post on button click with the id
 		document.getElementById("addComment").addEventListener("submit", function(event){
@@ -100,54 +113,151 @@
 		function addComment() {
 			// get the id of the post from the url
 		//	let postId = url.split('=')[1]
-			// get the comment from the form
-			let body = document.getElementById("body").value
-			// create a new object with the data including comment and postId
-			let data = JSON.stringify({body,postId})
+			// get the comment from the input field
+			const comment = document.getElementById("comment").value
+		//	data.postId = postId
 			// console log the data
-			console.log(`CommentPostBeforeSend: `, data)
+			console.log(`CommentToPostBeforeSend: `, comment)
 			// send the data to the server
-			fetch(`http://localhost:3001/comment`, {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json'
-				},
-				body: data,
-			})
-			.then(function(res){
-				return res.json()
-			})
-			.then(function(data){
-				console.log(data)
-			})
-		}
-/*		// add a new comment to the post with the id
-		function addComment() {
-			// get the id of the post from the url
-		//	let postId = url.split('=')[1]
-			// get the comment from the form
-			let body = document.getElementsById("body").value
-
-			// create a new object with the data including author, comment and postId
-			let data = {body,postId}
-			console.log(data)
-
 			fetch(`http://localhost:3001/comments`, {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json'
 				},
-				body: data,
+				body: JSON.stringify({ body: comment, postId })
 			})
 			.then(function(res){
 				return res.json()
 			})
-			.then(function(data){
-				console.log(data)
+			.then(function(json){
+				console.log(`CommentToPostAfterSend: `, json)
 			})
-		}*/
-    </script>
+			.catch(function(err) {
+				console.error('Error: ' + err)
+			})
+		}
 
+			// add a new comment to the post on button click with the id
+			document.getElementById("addCommentLoggedIn").addEventListener("submit", function(event){
+			event.preventDefault()
+			addCommentLoggedIn()
+		})
+		function addCommentLoggedIn() {
+			// get the id of the post from the url
+			let postId = url.split('=')[1]
+			// get the comment from the form
+			let body = document.getElementById("body").value
+			// get the author from the form
+			let author = document.getElementById("author").value
+			// create a new object with the data including comment, author and postId
+			let data = {body,author,postId}
+			// console log the data
+			console.log(`CommentToPostBeforeSendLoggedIn: `, data)
+			if(localStorage.getItem('token')) {
+				// check if the client is logged in by checking if the 'Authorization' header is present in the request
+				fetch('http://localhost:3001/login/verify', {
+					headers: {
+						'Authorization': 'Bearer ' + localStorage.getItem('token')
+					}
+				})
+				.then(function(res){
+					if(res.status === 403) {
+						// if the client is not logged in, display an error message
+						document.getElementById("result").innerHTML = "Error: you must be logged in to add a comment"
+						window.location = 'login.html'	
+					} else {
+					// if the client is logged in send the comment to the server
+					fetch(`http://localhost:3001/comments`, {
+						method: 'POST',
+						headers: {
+							'Content-Type': 'application/json'
+						},
+						body: JSON.stringify(data),
+					})
+					.then(function(res){
+						return res.json()
+					})
+					.then(function(data){
+						localStorage.setItem('author', data.author)
+						console.log("loggedIn comment added: ", data)
+					})
+					.catch(function(err) {
+						console.error('Error: ' + err)
+					})
+				}
+				})
+				.catch(function(err) {
+					console.error('Error: ' + err)
+				})
+			} else {
+				window.location = 'login.html'
+					}
+		}
+
+		// import the buffer module
+		import { Buffer } from "buffer"
+		// add a new file on button click with the form id
+		document.getElementById("fileUpload").addEventListener("submit", function(event){
+			event.preventDefault()
+			addFile()
+		})
+		function addFile() {
+			// get the file input element
+			const fileInput = document.getElementById("file")
+
+			// Make sure a file was selected
+			if (!fileInput.value) {
+				// Update the innerHTML of the element with id "result" to show an error message
+				document.getElementById("result").innerHTML = "Please select a file first"
+				return
+			}
+			console.log(fileInput)
+			// get the file that was selected by the user
+			const file = fileInput.files[0]
+			console.log(file)
+			// get the name of the file
+	//		const fileName = file.name
+			// create a FormData object to store the file
+			var formData = new FormData()
+
+			  // get the file data as an ArrayBuffer
+			file.arrayBuffer().then((arrayBuffer) => {
+			// convert the ArrayBuffer to a Buffer
+			const buffer = Buffer.from(arrayBuffer)
+			// append the file to the FormData object with the key 'file' and the name of the file
+			formData.append("file", buffer)
+	//		formData.append("fileName", fileName)
+			// if there is an author in the local storage, append it to the FormData object with the key 'author'
+			const author = localStorage.getItem('author')
+			if (author) {
+			formData.append("author", author)
+			}
+			console.log('File before upload: ', formData)
+  			// send the file to the server using fetch
+			fetch(`http://localhost:3001/upload`, {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'multipart/form-data'
+				},
+				body: formData
+			})
+			// if the response is successful, update the message
+			.then(function(res) {
+				if (res.ok) {
+					return res.text()
+				}
+				throw new Error("Failed to upload file")
+			})
+			.then(function(message) {
+				document.getElementById("fileUpload").innerHTML = message
+			})
+			// if the response is not successful, update the message
+			.catch(function(error) {
+				document.getElementById("fileUpload").innerHTML = error.message
+			})
+		})
+		}
+</script>
     <hr class="solid"></hr>
     <button onclick='zurueck()'>back to main page</button>
 </body>
